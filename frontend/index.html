@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solstice Events Co. | Staff Check-In Terminal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="kiosk-container">
+        <h1>Solstice Events Co. | Staff Check-In Terminal</h1>
+        
+        <div class="input-group">
+            <input type="text" id="qr-input" placeholder="Enter QR Code (e.g. QR-ALICE-101)">
+            <button id="scan-btn">Scan & Print Badge</button>
+        </div>
+        
+        <div class="test-buttons">
+            <button onclick="document.getElementById('qr-input').value='QR-ALICE-101'">Alice Smith (First-Time)</button>
+            <button onclick="document.getElementById('qr-input').value='QR-BOB-202'">Bob Jones (Duplicate)</button>
+            <button onclick="document.getElementById('qr-input').value='QR-CHARLIE-303'">Charlie Brown (VIP)</button>
+        </div>
+        
+        <div id="result-card" class="card">
+            <h3 id="result-title"></h3>
+            <p id="result-message"></p>
+            <div id="attendee-details"></div>
+        </div>
+        
+        <h2>Live Attendee Directory</h2>
+        <table id="directory-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>QR Code</th>
+                    <th>Name</th>
+                    <th>Ticket</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be populated by JS -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
