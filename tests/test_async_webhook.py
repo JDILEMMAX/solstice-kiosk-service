@@ -14,6 +14,8 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def setup_db():
     seed_db()
+    from backend.queue_manager import print_queue
+    print_queue._queue = None
     yield
 
 def test_first_time_checkin_enqueues_job():

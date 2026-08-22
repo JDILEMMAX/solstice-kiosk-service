@@ -5,7 +5,13 @@ from datetime import datetime
 
 class PrintJobQueue:
     def __init__(self):
-        self.queue = asyncio.Queue()
+        self._queue = None
+
+    @property
+    def queue(self):
+        if self._queue is None:
+            self._queue = asyncio.Queue()
+        return self._queue
 
     async def enqueue_job(self, qr_code: str, attendee_name: str) -> str:
         job_id = f"JOB-ASYNC-{uuid.uuid4()}"

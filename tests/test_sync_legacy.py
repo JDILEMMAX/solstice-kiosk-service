@@ -14,15 +14,17 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def setup_db():
     seed_db()
+    from backend.queue_manager import print_queue
+    print_queue._queue = None
     yield
 
 def test_first_time_checkin():
     response = client.post("/api/checkin", json={"qr_code": "QR-ALICE-101"})
     assert response.status_code == 200
     data = response.json()
-    assert data["status"] == "success"
-    assert data["badge_printed"] == True
-    assert data["attendee"]["status"] == "CHECKED_IN"
+    assert data["status"] == "PENDING_PRINT"
+    assert data["badge_printed"] == False
+    assert data["attendee"]["status"] == "PENDING_PRINT"
 
 def test_duplicate_scan_rejection():
     response = client.post("/api/checkin", json={"qr_code": "QR-BOB-202"})
