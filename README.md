@@ -62,7 +62,8 @@ solstice-kiosk-service/
 ├── tests/                     # Automated Verification Suites
 │   ├── test_sync_legacy.py    # Verification tests for baseline synchronous printing
 │   ├── test_async_webhook.py  # Verification tests for message queue & webhook callbacks
-│   └── test_sanity.py         # End-to-end routing & duplicate-scan validation tests
+│   ├── test_sanity.py         # End-to-end routing & duplicate-scan validation tests
+│   └── test_e2e_browser.py    # Headless browser E2E test for UI transitions & duplicate guard
 │
 ├── docs/                      # Sprint Audit Documentation
 │   ├── CONTRIBUTING.md        # Git branching standards & commit message rules
@@ -112,6 +113,10 @@ The API server will be live at `http://127.0.0.1:8000`. You can inspect interact
 Run the comprehensive test suite to validate synchronous legacy behavior, async message queue ingestion, webhook callbacks and duplicate protection:
 ```bash
 pytest tests/
+```
+Run the Playwright headless browser E2E test to verify UI transitions and duplicate guard:
+```bash
+"D:\Software Development & IT Programs\_PROJECTS\viridian-recon\viridian_recon\Scripts\pytest.exe" tests\test_e2e_browser.py
 ```
 
 ### Step 5: Launch the Kiosk UI
