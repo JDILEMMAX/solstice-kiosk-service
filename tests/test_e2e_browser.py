@@ -13,12 +13,9 @@ def setup_environment():
     seed_db()
     
     project_root = os.path.dirname(os.path.dirname(__file__))
-    local_python = os.path.join(project_root, "Scripts", "python.exe")
-    if not os.path.exists(local_python):
-        local_python = sys.executable
 
     process = subprocess.Popen(
-        [local_python, "-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "8000"],
+        [sys.executable, "-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "8000"],
         cwd=project_root
     )
     

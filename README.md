@@ -94,9 +94,10 @@ cd solstice-kiosk-service
    python -m venv solstice-kiosk-service
    source solstice-kiosk-service/bin/activate  # On Windows: solstice-kiosk-service\Scripts\activate
    ```
-2. Install the required Python packages:
+2. Install the required Python packages and browser dependencies:
    ```bash
    pip install -r requirements.txt
+   playwright install chromium
    ```
 3. Initialize and seed the SQLite database:
    ```bash
@@ -110,13 +111,13 @@ uvicorn backend.main:app --reload
 The API server will be live at `http://127.0.0.1:8000`. You can inspect interactive documentation at `http://127.0.0.1:8000/docs`.
 
 ### Step 4: Run Verification Tests
-Run the comprehensive test suite to validate synchronous legacy behavior, async message queue ingestion, webhook callbacks and duplicate protection:
+Run the backend unit and integration tests to validate synchronous legacy behavior, async message queue ingestion, webhook callbacks and duplicate protection:
 ```bash
-pytest tests/
+pytest tests/test_sync_legacy.py tests/test_async_webhook.py tests/test_sanity.py
 ```
-Run the Playwright headless browser E2E test to verify UI transitions and duplicate guard:
+Run the automated Playwright browser E2E test to verify UI transitions and duplicate guard:
 ```bash
-"D:\Software Development & IT Programs\_PROJECTS\viridian-recon\viridian_recon\Scripts\pytest.exe" tests\test_e2e_browser.py
+pytest tests/test_e2e_browser.py
 ```
 
 ### Step 5: Launch the Kiosk UI
