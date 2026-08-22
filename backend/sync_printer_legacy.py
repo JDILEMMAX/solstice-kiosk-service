@@ -1,3 +1,8 @@
+"""
+DEPRECATION NOTICE:
+This synchronous print driver was retired per the Day 4 pivot.
+It is retained solely for architectural audit history.
+"""
 import time
 import uuid
 

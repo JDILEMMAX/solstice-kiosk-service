@@ -1,11 +1,23 @@
+import asyncio
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-from backend.models import CheckInRequest, CheckInResponse
+from backend.models import CheckInRequest, CheckInResponse, PrinterWebhookPayload
 import backend.database as db
-from backend.sync_printer_legacy import print_badge_synchronous
+from backend.queue_manager import print_queue
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    worker_task = asyncio.create_task(print_queue.worker())
+    yield
+    worker_task.cancel()
+    try:
+        await worker_task
+    except asyncio.CancelledError:
+        pass
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,26 +39,31 @@ def get_attendee(qr_code: str):
     return attendee
 
 @app.post("/api/checkin", response_model=CheckInResponse)
-def checkin_attendee(request: CheckInRequest):
+async def checkin_attendee(request: CheckInRequest):
     attendee = db.get_attendee_by_qr(request.qr_code)
     if not attendee:
         raise HTTPException(status_code=404, detail="Attendee not found")
         
-    if attendee["status"] == "CHECKED_IN":
+    if attendee["status"] in ("CHECKED_IN", "PENDING_PRINT"):
         raise HTTPException(
             status_code=400, 
-            detail="Duplicate Scan Error: Attendee has already checked in and badge was issued."
+            detail="Duplicate Scan Error: Attendee is already checked in or print job is currently in progress."
         )
         
-    print_result = print_badge_synchronous(attendee)
-    db.update_attendee_status(request.qr_code, "CHECKED_IN", print_result["job_id"])
+    job_id = await print_queue.enqueue_job(request.qr_code, attendee["full_name"])
+    db.update_attendee_status(request.qr_code, "PENDING_PRINT", job_id)
     
     updated_attendee = db.get_attendee_by_qr(request.qr_code)
     
     return CheckInResponse(
-        status="success",
-        message="Checked in successfully.",
+        status="PENDING_PRINT",
+        message="Print job enqueued.",
         attendee=updated_attendee,
-        badge_printed=True,
+        badge_printed=False,
         timestamp=datetime.now().isoformat()
     )
+
+@app.post("/api/webhooks/printer")
+def printer_webhook(payload: PrinterWebhookPayload):
+    db.update_attendee_status(payload.qr_code, "CHECKED_IN", payload.job_id)
+    return {"status": "success", "message": "Check-in finalized via printer webhook callback"}

@@ -90,6 +90,20 @@ button:hover {
     display: block;
     border: 1px solid #00ff00;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+@keyframes pending-pulse {
+    0% { box-shadow: 0 0 10px rgba(255, 165, 0, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.6); }
+    100% { box-shadow: 0 0 10px rgba(255, 165, 0, 0.2); }
+}
+
+.card.pending {
+    display: block;
+    border: 1px solid #ffa500;
+    animation: pending-pulse 2s infinite ease-in-out;
+    transition: all 0.3s ease;
 }
 
 @keyframes pulse {

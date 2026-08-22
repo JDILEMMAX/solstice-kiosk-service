@@ -19,3 +19,9 @@ class CheckInResponse(BaseModel):
     attendee: AttendeeResponse
     badge_printed: bool
     timestamp: str
+
+class PrinterWebhookPayload(BaseModel):
+    job_id: str
+    qr_code: str
+    status: str
+    printed_at: str
